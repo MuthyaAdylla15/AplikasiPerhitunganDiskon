@@ -7,13 +7,46 @@
  *
  * @author acer
  */
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
 public class PerhitunganDiskon extends javax.swing.JFrame {
 
+    private ArrayList<String> history; // Initialize history as a class member
     /**
      * Creates new form PerhitunganDiskon
      */
     public PerhitunganDiskon() {
         initComponents();
+        
+         history = new ArrayList<>();
+        // Set slider value change listener
+        jSlider1.addChangeListener(e -> jComboBox1.setSelectedItem(jSlider1.getValue() + "%"));
+        
+        // Set combo box selection listener
+        jComboBox1.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                int discountPercentage = Integer.parseInt(jComboBox1.getSelectedItem().toString().replace("%", ""));
+                jSlider1.setValue(discountPercentage);
+            }
+        });
+        
+        // Only allow digits and one decimal point in jTextField1
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                String text = jTextField1.getText();
+                if (!Character.isDigit(c) && c != '.' || (c == '.' && text.contains("."))) {
+                    evt.consume();
+                }
+            }
+        });
+
+        // Add actions to btnHapus and btnKeluar
+        btnHapus.addActionListener(e -> clearFields());
+        btnKeluar.addActionListener(e -> System.exit(0)); 
     }
 
     /**
@@ -56,14 +89,38 @@ public class PerhitunganDiskon extends javax.swing.JFrame {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "5%", "10%", "15%", "20%", "25%", "50%" }));
 
         btnHitung.setText("Hitung Diskon");
+        btnHitung.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHitungActionPerformed(evt);
+            }
+        });
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                jTextArea1AncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         jScrollPane1.setViewportView(jTextArea1);
 
         btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
 
         btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -71,15 +128,22 @@ public class PerhitunganDiskon extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addGap(47, 47, 47)
-                            .addComponent(jLabel1))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                            .addGap(33, 33, 33)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(jLabel1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnHapus)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnKeluar))
+                            .addComponent(btnHitung, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(jLabel4)
@@ -92,16 +156,7 @@ public class PerhitunganDiskon extends javax.swing.JFrame {
                                     .addGap(32, 32, 32)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jTextField1)
-                                        .addComponent(jComboBox1, 0, 196, Short.MAX_VALUE))))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnHapus)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnKeluar))
-                            .addComponent(btnHitung, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE))))
+                                        .addComponent(jComboBox1, 0, 196, Short.MAX_VALUE)))))))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -148,6 +203,100 @@ public class PerhitunganDiskon extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTextArea1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jTextArea1AncestorAdded
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextArea1AncestorAdded
+
+    private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
+            try {
+        // Get input price and discount percentage
+        double originalPrice = Double.parseDouble(jTextField1.getText());
+        int discountPercentage = Integer.parseInt(jComboBox1.getSelectedItem().toString().replace("%", ""));
+        
+        // Get coupon code input
+        String couponCode = jTextField2.getText();
+        double voucherDiscount = 0;
+
+        // Check coupon code and apply additional discount
+        if (couponCode.equalsIgnoreCase("DISKON10")) {
+            voucherDiscount = 10; // Additional 10% discount
+        } else if (couponCode.equalsIgnoreCase("DISKON20")) {
+            voucherDiscount = 20; // Additional 20% discount
+        } else if (couponCode.equalsIgnoreCase("DISKON30")) {
+            voucherDiscount = 30; // Additional 30% discount
+        } else if (couponCode.equalsIgnoreCase("Muthya")) {
+            voucherDiscount = 90; // Additional 90% discount
+        } else if (!couponCode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Kode kupon tidak valid!", "Kesalahan Kupon", JOptionPane.ERROR_MESSAGE);
+            return; // Stop the process if the coupon code is invalid
+        }
+
+        // Calculate total discount = base discount + coupon discount
+        double totalDiscount = discountPercentage + voucherDiscount;
+
+        // Calculate savings and final price
+        double savings = originalPrice * totalDiscount / 100;
+        double finalPrice = originalPrice - savings;
+
+        // Display result with formatted text for better readability
+        String result = String.format(
+        "=== Hasil Perhitungan ===\n" +
+        "Harga Awal       : Rp %.2f\n" +
+        "Total Diskon     : %d%% + Kupon: %s (%d%%)\n" +
+        "Penghematan      : Rp %.2f\n" +
+        "Harga Akhir      : Rp %.2f\n", 
+        originalPrice, discountPercentage, couponCode, (int)voucherDiscount, savings, finalPrice);
+        jTextArea1.setText(result);
+
+        // Add calculation to history in a clear, vertically aligned format
+        String historyEntry = String.format(
+        "Harga Awal   : Rp %10.2f\n" +
+        "Diskon       : %3d%% + Kupon: %-10s (%2d%%)\n" +
+        "Penghematan  : Rp %10.2f\n" +
+        "Harga Akhir  : Rp %10.2f\n" +
+        "-------------------------------",
+        originalPrice, discountPercentage, couponCode, (int) voucherDiscount, savings, finalPrice);
+        history.add(historyEntry);  // Save to history
+        updateHistoryArea();
+
+
+
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Masukkan harga yang valid dalam angka.", "Kesalahan Input", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Kesalahan Input", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan yang tidak terduga.", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+    }
+
+    }//GEN-LAST:event_btnHitungActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+         btnHapus.addActionListener(e -> clearFields());
+         jTextField1.requestFocus();
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+         btnKeluar.addActionListener(e -> System.exit(0));
+    }//GEN-LAST:event_btnKeluarActionPerformed
+
+    private void updateHistoryArea() {
+        StringBuilder historyText = new StringBuilder("Riwayat Perhitungan Diskon:\n");
+        for (String entry : history) {
+            historyText.append(entry).append("\n");
+        }
+        jTextArea1.setText(historyText.toString());
+    }
+    
+    private void clearFields() {
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextArea1.setText("");
+        jSlider1.setValue(5); // Reset to initial value
+        jComboBox1.setSelectedIndex(0); // Reset to first item
+        history.clear(); // Clear the history
+        updateHistoryArea();
+    }
     /**
      * @param args the command line arguments
      */
