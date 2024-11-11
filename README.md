@@ -1,4 +1,4 @@
-# AplikasiPerhitunganDiskon
+# Aplikasi Perhitungan Diskon
  
 Program ini dirancang untuk membantu pengguna menghitung harga akhir setelah diskon. Pengguna cukup memasukkan harga asli produk dan memilih persentase diskon yang diinginkan. Program kemudian akan menghitung harga setelah diskon dan menunjukkan jumlah penghematan yang diperoleh.
 
